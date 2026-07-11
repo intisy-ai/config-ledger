@@ -1,5 +1,9 @@
 // @ts-nocheck
-// In-process library entry (dist/lib.js). Filled out in a later task once
-// export/diff/importer/history/profiles/setup exist; scaffold for now.
+export { snapshotLive, exportLive, autoCommit } from "./export.js";
+export { diffAgainstHead, flatten } from "./diff.js";
+export { importFromHead, rollbackKey, keyHistory } from "./importer.js";
+export { profiles } from "./profiles.js";
+export * as setup from "./setup.js";
+export { repo } from "./repo.js";
 export { getConfig } from "./config.js";
-export { configDir } from "./paths.js";
+export { configDir, dataRepoDir } from "./paths.js";

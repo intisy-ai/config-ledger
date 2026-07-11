@@ -6,7 +6,8 @@ runPluginContract({
   entry: "dist/index.js",
   configName: "config-git",
   app: "both",
-  commands: [],
+  commands: ["config-git", "config-git-config"],
   deploy: "load",
-  actions: [],
+  actions: [["status"]],
+  readme: true,
 });

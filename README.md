@@ -36,6 +36,13 @@ Config file: `<configDir>/config/config-git.json` (edit via the loader or `/conf
 | `secrets` | `"exclude"` |
 | `logging` | `true` |
 
+## Commands
+
+| Command | Description | Arguments |
+| --- | --- | --- |
+| `/config-git-config` | View and change config-git configuration | `list | get <key> | set <key> <value>` |
+| `/config-git` | Git-backed config: status/commit/push/pull/history/profile/setup |  |
+
 ## Dependencies
 
 - `core`
