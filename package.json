@@ -1,0 +1,20 @@
+{
+  "name": "config-git",
+  "version": "0.1.0",
+  "description": "Git-backed config management for the loader ecosystem: versioned, sanitized snapshots of an app home's config with history, rollback, and profiles.",
+  "main": "dist/index.js",
+  "type": "module",
+  "license": "MIT",
+  "author": "intisy",
+  "repository": { "type": "git", "url": "https://github.com/intisy-ai/config-git" },
+  "keywords": ["opencode", "claude-code", "config", "git", "sync"],
+  "files": ["dist/", "README.md", "LICENSE"],
+  "engines": { "node": ">=20.0.0" },
+  "scripts": {
+    "build": "tsc --noEmit && node build.mjs",
+    "postbuild": "node dist/index.js readme",
+    "test": "npm run build && vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": { "esbuild": "^0.23.0", "typescript": "^5.5.0", "vitest": "^2.0.0", "@types/node": "^20.0.0" }
+}
