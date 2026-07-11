@@ -2,11 +2,11 @@
 import { runPluginContract } from "../../core/src/testing.js";
 
 runPluginContract({
-  name: "config-git",
+  name: "config-ledger",
   entry: "dist/index.js",
-  configName: "config-git",
+  configName: "config-ledger",
   app: "both",
-  commands: ["config-git", "config-git-config"],
+  commands: ["config-ledger", "config-ledger-config"],
   deploy: "load",
   actions: [["status"]],
   readme: true,

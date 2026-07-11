@@ -12,8 +12,8 @@ function ensureRepo() {
   if (!isRepo()) {
     git(["init", "-b", DATA_BRANCH], p);
     // local identity ONLY for this shadow repo — never global, never --author on commits
-    git(["config", "user.email", "config-git@local"], p);
-    git(["config", "user.name", "config-git"], p);
+    git(["config", "user.email", "config-ledger@local"], p);
+    git(["config", "user.name", "config-ledger"], p);
   }
 }
 function isRepo() { return git(["rev-parse", "--is-inside-work-tree"], repoPath()).code === 0; }

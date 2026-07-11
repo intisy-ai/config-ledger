@@ -15,7 +15,7 @@ export function configDir() {
   return getAppConfigDir();
 }
 export function configFolder() { return join(configDir(), "config"); }
-export function dataRepoDir() { return join(configDir(), "repos", "config-git-data"); }
+export function dataRepoDir() { return join(configDir(), "repos", "config-ledger-data"); }
 
 // files under config/ that must NEVER enter the repo (secret stores + volatile)
 export const TRACKED_DENYLIST = new Set([

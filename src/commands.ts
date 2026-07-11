@@ -1,5 +1,5 @@
 // @ts-nocheck
-// Cross-app slash-commands for config-git plus the CLI actions behind them.
+// Cross-app slash-commands for config-ledger plus the CLI actions behind them.
 // Mirrors sync-bridge/src/commands.ts: `config` is forwarded to core's
 // runConfigCli directly (no separate maybeRunConfigCli call in index.ts).
 import { runConfigCli, configCommand } from "../core/src/index.js";
@@ -11,13 +11,13 @@ import { keyHistory } from "./history.js";
 import { profiles } from "./profiles.js";
 import * as setup from "./setup.js";
 
-export const CONFIG_GIT_COMMANDS = [
-  configCommand("config-git"),
+export const CONFIG_LEDGER_COMMANDS = [
+  configCommand("config-ledger"),
   {
-    name: "config-git",
+    name: "config-ledger",
     description: "Git-backed config: status/commit/push/pull/history/profile/setup",
     shell: 'node "{{BUNDLE}}" status',
-    body: "Above is the config-git status (setting-level diff vs the last commit). Summarize what changed.",
+    body: "Above is the config-ledger status (setting-level diff vs the last commit). Summarize what changed.",
   },
 ];
 
@@ -30,7 +30,7 @@ export async function maybeRunCli(pluginName) {
   if (cmd === "setup") {
     setup.initAndSeed();
     if (argv[1]) setup.setRemote(argv[1]);
-    process.stdout.write("config-git repo ready" + (argv[1] ? " (remote set)" : "") + "\n");
+    process.stdout.write("config-ledger repo ready" + (argv[1] ? " (remote set)" : "") + "\n");
     return true;
   }
   repo.ensureRepo();

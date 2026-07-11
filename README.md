@@ -1,8 +1,8 @@
-# config-git
+# config-ledger
 
-[![npm version](https://img.shields.io/npm/v/config-git)](https://www.npmjs.com/package/config-git)
-[![npm downloads](https://img.shields.io/npm/dm/config-git)](https://www.npmjs.com/package/config-git)
-[![CI](https://img.shields.io/github/actions/workflow/status/intisy-ai/config-git/publish.yml)](https://github.com/intisy-ai/config-git/actions)
+[![npm version](https://img.shields.io/npm/v/config-ledger)](https://www.npmjs.com/package/config-ledger)
+[![npm downloads](https://img.shields.io/npm/dm/config-ledger)](https://www.npmjs.com/package/config-ledger)
+[![CI](https://img.shields.io/github/actions/workflow/status/intisy-ai/config-ledger/publish.yml)](https://github.com/intisy-ai/config-ledger/actions)
 
 Git-backed config management for the loader ecosystem: versioned, sanitized snapshots of an app home's config with history, rollback, and profiles.
 
@@ -11,18 +11,18 @@ Git-backed config management for the loader ecosystem: versioned, sanitized snap
 ### Via plugin-updater (recommended)
 
 ```bash
-npx plugin-updater@latest init https://github.com/intisy-ai/config-git
+npx plugin-updater@latest init https://github.com/intisy-ai/config-ledger
 ```
 
 ### Via npm
 
 ```bash
-npm install config-git
+npm install config-ledger
 ```
 
 ## Configuration
 
-Config file: `<configDir>/config/config-git.json` (edit via the loader or `/config-git-config set`).
+Config file: `<configDir>/config/config-ledger.json` (edit via the loader or `/config-ledger-config set`).
 
 ```json
 {
@@ -40,8 +40,8 @@ Config file: `<configDir>/config/config-git.json` (edit via the loader or `/conf
 
 | Command | Description | Arguments |
 | --- | --- | --- |
-| `/config-git-config` | View and change config-git configuration | `list | get <key> | set <key> <value>` |
-| `/config-git` | Git-backed config: status/commit/push/pull/history/profile/setup |  |
+| `/config-ledger-config` | View and change config-ledger configuration | `list | get <key> | set <key> <value>` |
+| `/config-ledger` | Git-backed config: status/commit/push/pull/history/profile/setup |  |
 
 ## Dependencies
 
@@ -49,7 +49,7 @@ Config file: `<configDir>/config/config-git.json` (edit via the loader or `/conf
 
 ## Logging
 
-Logs are written to `<configDir>/logs/YYYY-MM-DD/config-git-HH-MM-SS.log` and are toggled by
+Logs are written to `<configDir>/logs/YYYY-MM-DD/config-ledger-HH-MM-SS.log` and are toggled by
 this plugin's `logging` config (default on). Console mirroring is global, off by default,
 and controlled by the shared `config/settings.json` `logConsole` flag.
 
