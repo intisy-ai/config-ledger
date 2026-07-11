@@ -6,7 +6,7 @@
   "type": "module",
   "license": "MIT",
   "author": "intisy",
-  "repository": { "type": "git", "url": "https://github.com/intisy-ai/config-ledger" },
+  "repository": { "type": "git", "url": "git+https://github.com/intisy-ai/config-ledger.git" },
   "keywords": ["opencode", "claude-code", "config", "git", "sync"],
   "files": ["dist/", "README.md", "LICENSE"],
   "engines": { "node": ">=20.0.0" },
