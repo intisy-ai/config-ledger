@@ -12,13 +12,13 @@ describe("setup + profiles", () => {
   it("initAndSeed creates a repo with a seed commit", async () => {
     const { setup, profiles } = await fresh();
     setup.initAndSeed();
-    expect(profiles.current()).toBe("main");
-    expect(profiles.list()).toContain("main");
+    expect(profiles.profiles.current()).toBe("main");
+    expect(profiles.profiles.list()).toContain("main");
   });
   it("create + switch profile", async () => {
     const { setup, profiles } = await fresh();
     setup.initAndSeed();
-    profiles.create("work"); profiles.switchTo("work");
-    expect(profiles.current()).toBe("work");
+    profiles.profiles.create("work"); profiles.profiles.switchTo("work");
+    expect(profiles.profiles.current()).toBe("work");
   });
 });

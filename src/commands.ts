@@ -38,7 +38,18 @@ export async function maybeRunCli(pluginName) {
   if (cmd === "commit") { process.stdout.write(autoCommit("manual") ? "committed\n" : "nothing to commit\n"); return true; }
   if (cmd === "push") { const x = repo.push(); process.stdout.write(x.message + "\n"); return true; }
   if (cmd === "pull") { const x = repo.pull(); process.stdout.write(x.message + "\n"); return true; }
-  if (cmd === "import") { process.stdout.write("imported " + importFromHead() + " files\n"); return true; }
+  if (cmd === "import") {
+    const confirmed = process.argv.slice(2).includes("--confirm");
+    if (!confirmed) {
+      const rows = diffAgainstHead();
+      if (rows.length === 0) { process.stdout.write("Already in sync with repo HEAD.\n"); return true; }
+      for (const r of rows) process.stdout.write(`${r.file} · ${r.key}: ${r.old} -> ${r.new}\n`);
+      process.stdout.write("Re-run with --confirm to apply these changes to live config.\n");
+      return true;
+    }
+    process.stdout.write("imported " + importFromHead() + " files\n");
+    return true;
+  }
   if (cmd === "history") { for (const h of keyHistory(argv[1], argv[2])) process.stdout.write(`${h.date} ${h.hash.slice(0, 7)} ${h.value}\n`); return true; }
   if (cmd === "profile") {
     if (argv[1]) {
