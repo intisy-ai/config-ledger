@@ -3,14 +3,14 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, unlinkSync } from
 import { join } from "path";
 import { configFolder, trackedConfigFiles } from "./paths.js";
 import { sanitizeForRepo } from "./secrets.js";
-import { repo } from "./repo.js";
+import { repoFor } from "./repo.js";
 import { getConfig } from "./config.js";
 import { publish, TOPICS } from "../core/src/index.js";
 
-export function snapshotLive(mode) {
+export function snapshotLive(mode, home) {
   const out = {};
-  for (const name of trackedConfigFiles()) {
-    const p = join(configFolder(), name);
+  for (const name of trackedConfigFiles(home)) {
+    const p = join(configFolder(home), name);
     let text;
     try { text = readFileSync(p, "utf8"); } catch { continue; }
     out[name] = sanitizeForRepo(name, text, mode);
@@ -18,10 +18,10 @@ export function snapshotLive(mode) {
   return out;
 }
 
-export function exportLive() {
+export function exportLive(home) {
   const mode = getConfig().secrets === "include" ? "include" : "exclude";
-  const snap = snapshotLive(mode);
-  const rp = repo.repoPath();
+  const snap = snapshotLive(mode, home);
+  const rp = repoFor(home).repoPath();
   // write current tracked files
   for (const [name, text] of Object.entries(snap)) writeFileSync(join(rp, name), text, "utf8");
   // remove repo files whose live source no longer exists (ignore .git)
@@ -32,12 +32,13 @@ export function exportLive() {
   return Object.keys(snap).length;
 }
 
-export function autoCommit(reason) {
-  exportLive();
+export function autoCommit(reason, home) {
+  exportLive(home);
+  const repo = repoFor(home);
   const committed = repo.commitAll("auto: " + reason);
   if (committed) {
     const head = repo.log()[0];
-    publish(TOPICS.configSnapshot, { hash: head ? head.hash : "", reason, files: trackedConfigFiles() }, "config-ledger");
+    publish(TOPICS.configSnapshot, { hash: head ? head.hash : "", reason, files: trackedConfigFiles(home) }, "config-ledger");
   }
   return committed;
 }

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { snapshotLive } from "./export.js";
-import { repo } from "./repo.js";
+import { repoFor } from "./repo.js";
 import { trackedConfigFiles } from "./paths.js";
 import { getConfig } from "./config.js";
 
@@ -22,20 +22,37 @@ function parse(text) { try { return text == null ? {} : JSON.parse(text); } catc
 }
 const show = (v) => (v === undefined ? "(unset)" : String(v));
 
-export function diffAgainstHead() {
-  const mode = getConfig().secrets === "include" ? "include" : "exclude";
-  const live = snapshotLive(mode);
-  const names = new Set([...trackedConfigFiles(), ...Object.keys(live)]);
+function diffRows(fileKeys, oldFlatOf, newFlatOf) {
   const rows = [];
-  for (const file of names) {
-    const liveFlat = flatten(parse(live[file]));
-    const headText = repo.showFileAtRef("HEAD", file);
-    const headFlat = flatten(parse(headText));
-    const keys = new Set([...Object.keys(liveFlat), ...Object.keys(headFlat)]);
+  for (const file of fileKeys) {
+    const oldFlat = oldFlatOf(file);
+    const newFlat = newFlatOf(file);
+    const keys = new Set([...Object.keys(oldFlat), ...Object.keys(newFlat)]);
     for (const key of keys) {
-      const o = headFlat[key], n = liveFlat[key];
+      const o = oldFlat[key], n = newFlat[key];
       if (String(o) !== String(n)) rows.push({ file, key, old: show(o), new: show(n) });
     }
   }
   return rows.sort((a, b) => (a.file + a.key).localeCompare(b.file + b.key));
+}
+
+export function diffAgainstHead(home) {
+  const mode = getConfig().secrets === "include" ? "include" : "exclude";
+  const live = snapshotLive(mode, home);
+  const repo = repoFor(home);
+  const names = new Set([...trackedConfigFiles(home), ...Object.keys(live)]);
+  return diffRows(
+    names,
+    (file) => flatten(parse(repo.showFileAtRef("HEAD", file))),
+    (file) => flatten(parse(live[file])),
+  );
+}
+
+// Compare two committed refs (hash/branch/HEAD) in the home's data repo, for a
+// timeline UI. `old` holds refA's value, `new` holds refB's.
+export function diffRefs(refA, refB, home) {
+  const repo = repoFor(home);
+  const at = (ref, file) => flatten(parse(repo.showFileAtRef(ref, file)));
+  const names = new Set([...repo.filesAtRef(refA), ...repo.filesAtRef(refB)]);
+  return diffRows(names, (file) => at(refA, file), (file) => at(refB, file));
 }

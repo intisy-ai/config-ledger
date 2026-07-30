@@ -2,30 +2,33 @@
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { configFolder, trackedConfigFiles } from "./paths.js";
-import { repo } from "./repo.js";
+import { repoFor } from "./repo.js";
 import { autoCommit } from "./export.js";
 import { valueAt } from "./history.js";
 import { publish, TOPICS } from "../core/src/index.js";
 export { keyHistory } from "./history.js";
 
 // Whole-file writes; the caller is responsible for having shown/approved the
-// diff first (enforced at the UI/CLI layer, not here).
-export function importFromHead() {
+// diff first (enforced at the UI/CLI layer, not here). ref is any committish in
+// the home's data repo (HEAD, a commit hash, a branch name).
+export function restoreFromRef(ref, home) {
   let n = 0;
-  const names = trackedConfigFiles();
-  for (const name of names) {
-    const text = repo.showFileAtRef("HEAD", name);
+  const repo = repoFor(home);
+  for (const name of trackedConfigFiles(home)) {
+    const text = repo.showFileAtRef(ref, name);
     if (text == null) continue;
-    writeFileSync(join(configFolder(), name), text, "utf8");
+    writeFileSync(join(configFolder(home), name), text, "utf8");
     publish(TOPICS.configChanged, { name }, "config-ledger");
     n++;
   }
   return n;
 }
 
-export function rollbackKey(file, key, hash) {
-  const val = valueAt(hash, file, key);
-  const p = join(configFolder(), file);
+export function importFromHead(home) { return restoreFromRef("HEAD", home); }
+
+export function rollbackKey(file, key, hash, home) {
+  const val = valueAt(hash, file, key, home);
+  const p = join(configFolder(home), file);
   // Never rewrite a file we could not parse: that would discard every other
   // setting in it. Abort instead so the caller sees the failure.
   let obj;
@@ -48,5 +51,5 @@ export function rollbackKey(file, key, hash) {
   else node[leaf] = val;
   writeFileSync(p, JSON.stringify(obj, null, 2), "utf8");
   publish(TOPICS.configChanged, { name: file }, "config-ledger");
-  return autoCommit("rollback " + file + ":" + key);
+  return autoCommit("rollback " + file + ":" + key, home);
 }

@@ -11,11 +11,14 @@ import { join } from "path";
 import { readdirSync } from "fs";
 import { getAppConfigDir } from "../core/src/index.js";
 
-export function configDir() {
-  return getAppConfigDir();
+// `home` scopes every path to one app config dir. Omit it and the current app's
+// dir (getAppConfigDir) is used, so single-home callers behave unchanged; Cairn
+// passes an explicit home per app it manages.
+export function configDir(home) {
+  return home || getAppConfigDir();
 }
-export function configFolder() { return join(configDir(), "config"); }
-export function dataRepoDir() { return join(configDir(), "repos", "config-ledger-data"); }
+export function configFolder(home) { return join(configDir(home), "config"); }
+export function dataRepoDir(home) { return join(configDir(home), "repos", "config-ledger-data"); }
 
 // files under config/ that must NEVER enter the repo (secret stores + volatile)
 export const TRACKED_DENYLIST = new Set([
@@ -32,10 +35,10 @@ export const SECRET_FIELDS = {
 // tracked config file NAMES: every config/*.json minus the denylist, + plugins.json.
 // readdirSync(configFolder()) is non-recursive, so cache/ and logs/ (siblings of
 // config/, not files inside it) never appear here in the first place.
-export function trackedConfigFiles() {
+export function trackedConfigFiles(home) {
   const out = [];
   try {
-    for (const f of readdirSync(configFolder())) {
+    for (const f of readdirSync(configFolder(home))) {
       if (!f.endsWith(".json")) continue;
       if (TRACKED_DENYLIST.has(f)) continue;
       out.push(f);
