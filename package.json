@@ -6,15 +6,35 @@
   "type": "module",
   "license": "MIT",
   "author": "intisy",
-  "repository": { "type": "git", "url": "git+https://github.com/intisy-ai/config-ledger.git" },
-  "keywords": ["opencode", "claude-code", "config", "git", "sync"],
-  "files": ["dist/", "README.md", "LICENSE"],
-  "engines": { "node": ">=20.0.0" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/intisy-ai/config-ledger.git"
+  },
+  "keywords": [
+    "opencode",
+    "claude-code",
+    "config",
+    "git",
+    "sync"
+  ],
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "tsc --noEmit && node build.mjs",
     "postbuild": "node dist/index.js readme",
     "test": "npm run build && vitest run",
     "prepublishOnly": "npm run build"
   },
-  "devDependencies": { "esbuild": "^0.23.0", "typescript": "^5.5.0", "vitest": "^2.0.0", "@types/node": "^20.0.0" }
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "esbuild": "^0.23.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
 }
