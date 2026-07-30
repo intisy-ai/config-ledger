@@ -8,7 +8,7 @@ const DATA_BRANCH = "main";
 // One shadow git repo per app home. repoFor(home) binds every operation to that
 // home's data repo; repo (below) is the default-home instance for single-home
 // callers, so existing code and tests are unchanged.
-export function repoFor(home) {
+export function repoFor(home?) {
   function repoPath() { return dataRepoDir(home); }
   function isRepo() { return git(["rev-parse", "--is-inside-work-tree"], repoPath()).code === 0; }
 
@@ -49,7 +49,7 @@ export function repoFor(home) {
     if (r.code !== 0) return [];
     return r.stdout.split("\n").map((s) => s.trim()).filter((f) => f.endsWith(".json"));
   }
-  function log(relPath) {
+  function log(relPath?) {
     const args = ["log", "--pretty=format:%H\t%ad\t%s", "--date=iso"];
     if (relPath) args.push("--", relPath);
     const r = git(args, repoPath());

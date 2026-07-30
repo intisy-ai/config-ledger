@@ -2,13 +2,13 @@
 import { repoFor } from "./repo.js";
 import { flatten } from "./diff.js";
 
-function valueAt(hash, file, key, home) {
+function valueAt(hash, file, key, home?) {
   const text = repoFor(home).showFileAtRef(hash, file);
   if (text == null) return undefined;
   try { return flatten(JSON.parse(text))[key]; } catch { return undefined; }
 }
 
-export function keyHistory(file, key, home) {
+export function keyHistory(file, key, home?) {
   const commits = repoFor(home).log(file);
   const out = [];
   let last = Symbol("none");

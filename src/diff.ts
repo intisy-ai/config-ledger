@@ -36,7 +36,7 @@ function diffRows(fileKeys, oldFlatOf, newFlatOf) {
   return rows.sort((a, b) => (a.file + a.key).localeCompare(b.file + b.key));
 }
 
-export function diffAgainstHead(home) {
+export function diffAgainstHead(home?) {
   const mode = getConfig().secrets === "include" ? "include" : "exclude";
   const live = snapshotLive(mode, home);
   const repo = repoFor(home);
@@ -50,7 +50,7 @@ export function diffAgainstHead(home) {
 
 // Compare two committed refs (hash/branch/HEAD) in the home's data repo, for a
 // timeline UI. `old` holds refA's value, `new` holds refB's.
-export function diffRefs(refA, refB, home) {
+export function diffRefs(refA, refB, home?) {
   const repo = repoFor(home);
   const at = (ref, file) => flatten(parse(repo.showFileAtRef(ref, file)));
   const names = new Set([...repo.filesAtRef(refA), ...repo.filesAtRef(refB)]);

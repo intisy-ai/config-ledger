@@ -7,7 +7,7 @@ import { repoFor } from "./repo.js";
 import { getConfig } from "./config.js";
 import { publish, TOPICS } from "../core/src/index.js";
 
-export function snapshotLive(mode, home) {
+export function snapshotLive(mode, home?) {
   const out = {};
   for (const name of trackedConfigFiles(home)) {
     const p = join(configFolder(home), name);
@@ -18,7 +18,7 @@ export function snapshotLive(mode, home) {
   return out;
 }
 
-export function exportLive(home) {
+export function exportLive(home?) {
   const mode = getConfig().secrets === "include" ? "include" : "exclude";
   const snap = snapshotLive(mode, home);
   const rp = repoFor(home).repoPath();
@@ -32,7 +32,7 @@ export function exportLive(home) {
   return Object.keys(snap).length;
 }
 
-export function autoCommit(reason, home) {
+export function autoCommit(reason, home?) {
   exportLive(home);
   const repo = repoFor(home);
   const committed = repo.commitAll("auto: " + reason);

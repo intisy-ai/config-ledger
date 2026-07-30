@@ -11,7 +11,7 @@ export { keyHistory } from "./history.js";
 // Whole-file writes; the caller is responsible for having shown/approved the
 // diff first (enforced at the UI/CLI layer, not here). ref is any committish in
 // the home's data repo (HEAD, a commit hash, a branch name).
-export function restoreFromRef(ref, home) {
+export function restoreFromRef(ref, home?) {
   let n = 0;
   const repo = repoFor(home);
   for (const name of trackedConfigFiles(home)) {
@@ -24,9 +24,9 @@ export function restoreFromRef(ref, home) {
   return n;
 }
 
-export function importFromHead(home) { return restoreFromRef("HEAD", home); }
+export function importFromHead(home?) { return restoreFromRef("HEAD", home); }
 
-export function rollbackKey(file, key, hash, home) {
+export function rollbackKey(file, key, hash, home?) {
   const val = valueAt(hash, file, key, home);
   const p = join(configFolder(home), file);
   // Never rewrite a file we could not parse: that would discard every other
