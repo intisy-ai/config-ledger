@@ -29,4 +29,46 @@ describe("importer + history", () => {
     expect(rollbackKey("claude-code-loader.json", "providerRouting", older.hash)).toBe(true);
     expect(liveCfg().providerRouting).toBe(true);   // restored
   });
+
+  it("aborts instead of wiping the file when the live copy is not valid JSON", async () => {
+    const { rollbackKey } = await fresh();
+    const { autoCommit } = await import("./export.js");
+    const { repo } = await import("./repo.js");
+    repo.ensureRepo();
+    autoCommit("v1");
+    const corrupt = "{ not valid json";
+    writeFileSync(join(dir, "config", "claude-code-loader.json"), corrupt);
+    expect(() => rollbackKey("claude-code-loader.json", "providerRouting", "HEAD")).toThrow();
+    expect(readFileSync(join(dir, "config", "claude-code-loader.json"), "utf8")).toBe(corrupt);
+  });
+
+  it("replaces a non-object intermediate instead of crashing", async () => {
+    const { rollbackKey } = await fresh();
+    const { autoCommit } = await import("./export.js");
+    const { repo } = await import("./repo.js");
+    repo.ensureRepo();
+    const f = join(dir, "config", "claude-code-loader.json");
+    writeFileSync(f, JSON.stringify({ a: { b: 1 } }));
+    autoCommit("v1");
+    const v1 = repo.log("claude-code-loader.json")[0].hash;
+    writeFileSync(f, JSON.stringify({ a: "no-longer-an-object" }));
+    expect(() => rollbackKey("claude-code-loader.json", "a.b", v1)).not.toThrow();
+    expect(liveCfg().a).toEqual({ b: 1 });
+  });
+
+  it("removes a key that did not exist at the target commit", async () => {
+    const { rollbackKey } = await fresh();
+    const { autoCommit } = await import("./export.js");
+    const { repo } = await import("./repo.js");
+    repo.ensureRepo();
+    const f = join(dir, "config", "claude-code-loader.json");
+    writeFileSync(f, JSON.stringify({ x: 1 }));
+    autoCommit("v1");
+    const v1 = repo.log("claude-code-loader.json")[0].hash;
+    writeFileSync(f, JSON.stringify({ x: 1, y: 2 }));
+    autoCommit("v2");
+    expect(rollbackKey("claude-code-loader.json", "y", v1)).toBe(true);
+    expect("y" in liveCfg()).toBe(false);
+    expect(liveCfg().x).toBe(1);
+  });
 });
