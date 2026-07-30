@@ -5,6 +5,7 @@ import { configFolder, trackedConfigFiles } from "./paths.js";
 import { repo } from "./repo.js";
 import { autoCommit } from "./export.js";
 import { valueAt } from "./history.js";
+import { publish, TOPICS } from "../core/src/index.js";
 export { keyHistory } from "./history.js";
 
 // Whole-file writes; the caller is responsible for having shown/approved the
@@ -16,6 +17,7 @@ export function importFromHead() {
     const text = repo.showFileAtRef("HEAD", name);
     if (text == null) continue;
     writeFileSync(join(configFolder(), name), text, "utf8");
+    publish(TOPICS.configChanged, { name }, "config-ledger");
     n++;
   }
   return n;
@@ -45,5 +47,6 @@ export function rollbackKey(file, key, hash) {
   if (val === undefined) delete node[leaf];
   else node[leaf] = val;
   writeFileSync(p, JSON.stringify(obj, null, 2), "utf8");
+  publish(TOPICS.configChanged, { name: file }, "config-ledger");
   return autoCommit("rollback " + file + ":" + key);
 }

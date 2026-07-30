@@ -71,4 +71,39 @@ describe("importer + history", () => {
     expect("y" in liveCfg()).toBe(false);
     expect(liveCfg().x).toBe(1);
   });
+
+  it("publishes config.snapshot when a commit is made", async () => {
+    await fresh();
+    const { autoCommit } = await import("./export.js");
+    const { repo } = await import("./repo.js");
+    const { drain } = await import("../core/src/index.js");
+    repo.ensureRepo();
+    expect(autoCommit("snap-reason")).toBe(true);
+
+    const events: { topic: string; payload: { reason?: string; hash?: string } }[] = [];
+    drain("cl-snap", (e: typeof events[number]) => events.push(e));
+    const snap = events.find((e) => e.topic === "config.snapshot");
+    expect(snap).toBeTruthy();
+    expect(snap!.payload.reason).toBe("snap-reason");
+    expect(typeof snap!.payload.hash).toBe("string");
+    expect(snap!.payload.hash!.length).toBeGreaterThan(0);
+  });
+
+  it("publishes config.changed when rolling a key back", async () => {
+    const { rollbackKey } = await fresh();
+    const { autoCommit } = await import("./export.js");
+    const { repo } = await import("./repo.js");
+    const { keyHistory } = await import("./history.js");
+    const { drain } = await import("../core/src/index.js");
+    repo.ensureRepo();
+    autoCommit("v1");
+    writeFileSync(join(dir, "config", "claude-code-loader.json"), JSON.stringify({ providerRouting: false }));
+    autoCommit("v2");
+    const older = keyHistory("claude-code-loader.json", "providerRouting").find((h) => String(h.value) === "true");
+    rollbackKey("claude-code-loader.json", "providerRouting", older.hash);
+
+    const events: { topic: string; payload: { name?: string } }[] = [];
+    drain("cl-changed", (e: typeof events[number]) => events.push(e));
+    expect(events.some((e) => e.topic === "config.changed" && e.payload.name === "claude-code-loader.json")).toBe(true);
+  });
 });
