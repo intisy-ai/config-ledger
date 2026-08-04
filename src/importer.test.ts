@@ -72,21 +72,20 @@ describe("importer + history", () => {
     expect(liveCfg().x).toBe(1);
   });
 
-  it("publishes config.snapshot when a commit is made", async () => {
+  it("emits a snapshot_committed activity when a commit is made", async () => {
     await fresh();
     const { autoCommit } = await import("./export.js");
     const { repo } = await import("./repo.js");
-    const { drain } = await import("../core/src/index.js");
+    const { readActivity } = await import("../core/src/index.js");
     repo.ensureRepo();
     expect(autoCommit("snap-reason")).toBe(true);
 
-    const events: { topic: string; payload: { reason?: string; hash?: string } }[] = [];
-    drain("cl-snap", (e: typeof events[number]) => events.push(e));
-    const snap = events.find((e) => e.topic === "config.snapshot");
-    expect(snap).toBeTruthy();
-    expect(snap!.payload.reason).toBe("snap-reason");
-    expect(typeof snap!.payload.hash).toBe("string");
-    expect(snap!.payload.hash!.length).toBeGreaterThan(0);
+    const { records } = readActivity([dir], { topics: ["config.snapshot"] });
+    expect(records).toHaveLength(1);
+    expect(records[0].action).toBe("snapshot_committed");
+    expect(records[0].details.reason).toBe("snap-reason");
+    expect(typeof records[0].subject?.id).toBe("string");
+    expect((records[0].subject!.id as string).length).toBeGreaterThan(0);
   });
 
   it("publishes config.changed when rolling a key back", async () => {

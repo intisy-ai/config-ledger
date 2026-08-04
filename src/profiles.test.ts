@@ -19,8 +19,7 @@ async function load() {
   vi.resetModules();
   const { profiles } = await import("./profiles.js");
   const { setup } = { setup: await import("./setup.js") };
-  const { drain } = await import("../core/src/index.js");
-  return { profiles, setup, drain };
+  return { profiles, setup };
 }
 
 describe("profile switch applies to live config", () => {
@@ -51,16 +50,17 @@ describe("profile switch applies to live config", () => {
     expect(profiles.current()).toBe("main");               // no switch happened
   });
 
-  it("publishes config.profile_changed on a successful switch", async () => {
-    const { profiles, setup, drain } = await load();
+  it("emits a profile_changed activity on a successful switch", async () => {
+    const { profiles, setup } = await load();
+    const { readActivity } = await import("../core/src/index.js");
     setup.initAndSeed();
     profiles.create("work");
     profiles.switchTo("work");
 
-    const events: { topic: string; payload: { profile?: string } }[] = [];
-    drain("prof-test", (e: typeof events[number]) => events.push(e));
-    const evt = events.find((e) => e.topic === "config.profile_changed");
-    expect(evt).toBeTruthy();
-    expect(evt!.payload.profile).toBe("work");
+    const { records } = readActivity([dir], { topics: ["config.profile_changed"] });
+    expect(records).toHaveLength(1);
+    expect(records[0].action).toBe("profile_changed");
+    expect(records[0].subject?.id).toBe("work");
+    expect(records[0].subject?.label).toBe("work");
   });
 });

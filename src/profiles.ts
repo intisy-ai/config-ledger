@@ -3,7 +3,7 @@ import { repoFor } from "./repo.js";
 import { diffAgainstHead } from "./diff.js";
 import { restoreFromRef } from "./importer.js";
 import { trackedConfigFiles } from "./paths.js";
-import { publish, TOPICS } from "../core/src/index.js";
+import { emitEvent, TOPICS } from "../core/src/index.js";
 
 // Switching a profile means checking out that branch in the shadow repo AND
 // applying its config to the live files. We refuse when live has uncommitted
@@ -15,7 +15,7 @@ function switchTo(name, home?) {
   }
   repoFor(home).checkoutBranch(name);
   const files = restoreFromRef("HEAD", home);
-  publish(TOPICS.configProfileChanged, { profile: name, files: trackedConfigFiles(home) }, "config-ledger");
+  emitEvent({ topic: TOPICS.configProfileChanged, action: "profile_changed", impact: "notice", subject: { kind: "profile", id: name, label: name }, details: { files: trackedConfigFiles(home) } }, "config-ledger");
   return { ok: true, profile: name, files };
 }
 
