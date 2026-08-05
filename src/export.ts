@@ -39,7 +39,7 @@ export function autoCommit(reason, home?) {
   if (committed) {
     const head = repo.log()[0];
     const hash = head ? head.hash : "";
-    emitEvent({ topic: TOPICS.configSnapshot, action: "snapshot_committed", impact: "notice", subject: { kind: "snapshot", id: hash }, details: { reason, files: trackedConfigFiles(home) } }, "config-ledger");
+    emitEvent({ topic: TOPICS.configSnapshot, action: "snapshot_committed", impact: "notice", outcome: "ok", subject: { kind: "snapshot", id: hash }, details: { reason, files: trackedConfigFiles(home) } }, "config-ledger");
   }
   return committed;
 }

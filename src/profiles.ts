@@ -15,7 +15,7 @@ function switchTo(name, home?) {
   }
   repoFor(home).checkoutBranch(name);
   const files = restoreFromRef("HEAD", home);
-  emitEvent({ topic: TOPICS.configProfileChanged, action: "profile_changed", impact: "notice", subject: { kind: "profile", id: name, label: name }, details: { files: trackedConfigFiles(home) } }, "config-ledger");
+  emitEvent({ topic: TOPICS.configProfileChanged, action: "profile_changed", impact: "notice", outcome: "ok", subject: { kind: "profile", id: name, label: name }, details: { files: trackedConfigFiles(home) } }, "config-ledger");
   return { ok: true, profile: name, files };
 }
 
