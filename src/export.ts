@@ -5,7 +5,7 @@ import { configFolder, trackedConfigFiles } from "./paths.js";
 import { sanitizeForRepo } from "./secrets.js";
 import { repoFor } from "./repo.js";
 import { getConfig } from "./config.js";
-import { publish, TOPICS } from "../core/src/index.js";
+import { emitEvent, TOPICS } from "../core/src/index.js";
 
 export function snapshotLive(mode, home?) {
   const out = {};
@@ -38,7 +38,8 @@ export function autoCommit(reason, home?) {
   const committed = repo.commitAll("auto: " + reason);
   if (committed) {
     const head = repo.log()[0];
-    publish(TOPICS.configSnapshot, { hash: head ? head.hash : "", reason, files: trackedConfigFiles(home) }, "config-ledger");
+    const hash = head ? head.hash : "";
+    emitEvent({ topic: TOPICS.configSnapshot, action: "snapshot_committed", impact: "notice", outcome: "ok", subject: { kind: "snapshot", id: hash }, details: { reason, files: trackedConfigFiles(home) } }, "config-ledger");
   }
   return committed;
 }

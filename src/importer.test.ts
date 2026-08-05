@@ -72,21 +72,63 @@ describe("importer + history", () => {
     expect(liveCfg().x).toBe(1);
   });
 
-  it("publishes config.snapshot when a commit is made", async () => {
+  it("records a rolled-back key as a normalized config change, with an origin", async () => {
+    const { rollbackKey } = await fresh();
+    const { autoCommit } = await import("./export.js");
+    const { repo } = await import("./repo.js");
+    const { readActivity } = await import("../core/src/index.js");
+    repo.ensureRepo();
+    const f = join(dir, "config", "claude-code-loader.json");
+    writeFileSync(f, JSON.stringify({ providerRouting: true }));
+    autoCommit("v1");
+    const v1 = repo.log("claude-code-loader.json")[0].hash;
+    writeFileSync(f, JSON.stringify({ providerRouting: false }));
+    autoCommit("v2");
+    expect(rollbackKey("claude-code-loader.json", "providerRouting", v1)).toBe(true);
+
+    const { records } = readActivity([dir], { topics: ["config.changed"] });
+    const rec = records.find((r) => r.details.key === "providerRouting");
+    expect(rec).toBeDefined();
+    expect(rec!.action).toBe("config_changed");
+    expect(rec!.outcome).toBe("ok");
+    expect(rec!.source).toBe("config-ledger");
+    // a raw publish carries no origin at all, so this is what proves the channel changed
+    expect(rec!.origin.home).toBe(dir);
+    expect(rec!.details.file).toBe("claude-code-loader.json");
+  });
+
+  it("records a restored file as a normalized config change, with an origin", async () => {
+    const { importFromHead } = await fresh();
+    const { autoCommit } = await import("./export.js");
+    const { repo } = await import("./repo.js");
+    const { readActivity } = await import("../core/src/index.js");
+    repo.ensureRepo();
+    autoCommit("v1");
+    writeFileSync(join(dir, "config", "claude-code-loader.json"), JSON.stringify({ providerRouting: false }));
+    expect(importFromHead()).toBeGreaterThan(0);
+
+    const { records } = readActivity([dir], { topics: ["config.changed"] });
+    const rec = records.find((r) => r.details.file === "claude-code-loader.json");
+    expect(rec).toBeDefined();
+    expect(rec!.action).toBe("config_changed");
+    expect(rec!.origin.home).toBe(dir);
+    expect(rec!.details.ref).toBe("HEAD");
+  });
+
+  it("emits a snapshot_committed activity when a commit is made", async () => {
     await fresh();
     const { autoCommit } = await import("./export.js");
     const { repo } = await import("./repo.js");
-    const { drain } = await import("../core/src/index.js");
+    const { readActivity } = await import("../core/src/index.js");
     repo.ensureRepo();
     expect(autoCommit("snap-reason")).toBe(true);
 
-    const events: { topic: string; payload: { reason?: string; hash?: string } }[] = [];
-    drain("cl-snap", (e: typeof events[number]) => events.push(e));
-    const snap = events.find((e) => e.topic === "config.snapshot");
-    expect(snap).toBeTruthy();
-    expect(snap!.payload.reason).toBe("snap-reason");
-    expect(typeof snap!.payload.hash).toBe("string");
-    expect(snap!.payload.hash!.length).toBeGreaterThan(0);
+    const { records } = readActivity([dir], { topics: ["config.snapshot"] });
+    expect(records).toHaveLength(1);
+    expect(records[0].action).toBe("snapshot_committed");
+    expect(records[0].details.reason).toBe("snap-reason");
+    expect(typeof records[0].subject?.id).toBe("string");
+    expect((records[0].subject!.id as string).length).toBeGreaterThan(0);
   });
 
   it("publishes config.changed when rolling a key back", async () => {
@@ -102,8 +144,8 @@ describe("importer + history", () => {
     const older = keyHistory("claude-code-loader.json", "providerRouting").find((h) => String(h.value) === "true");
     rollbackKey("claude-code-loader.json", "providerRouting", older.hash);
 
-    const events: { topic: string; payload: { name?: string } }[] = [];
+    const events: { topic: string; payload: { details?: { file?: string } } }[] = [];
     drain("cl-changed", (e: typeof events[number]) => events.push(e));
-    expect(events.some((e) => e.topic === "config.changed" && e.payload.name === "claude-code-loader.json")).toBe(true);
+    expect(events.some((e) => e.topic === "config.changed" && e.payload.details?.file === "claude-code-loader.json")).toBe(true);
   });
 });
