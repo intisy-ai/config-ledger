@@ -1,7 +1,7 @@
 // @ts-nocheck
 // Plugin hook entry — exports ONLY the hook + activate (OpenCode runs every
 // export as a hook); the library API lives in dist/lib.js.
-import { defineReadme, maybeRunReadmeCli, deployCommands } from "../core/src/index.js";
+import { defineReadme, maybeRunReadmeCli, deployCommands } from "@intisy-ai/core";
 import { getConfig, writeLog } from "./config.js";
 import { CONFIG_LEDGER_COMMANDS, maybeRunCli } from "./commands.js";
 import { repo } from "./repo.js";

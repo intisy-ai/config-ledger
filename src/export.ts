@@ -5,7 +5,7 @@ import { configFolder, trackedConfigFiles } from "./paths.js";
 import { sanitizeForRepo } from "./secrets.js";
 import { repoFor } from "./repo.js";
 import { getConfig } from "./config.js";
-import { emitEvent, TOPICS } from "../core/src/index.js";
+import { emitEvent, TOPICS } from "@intisy-ai/core";
 
 export function snapshotLive(mode, home?) {
   const out = {};

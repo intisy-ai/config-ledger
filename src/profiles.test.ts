@@ -52,7 +52,7 @@ describe("profile switch applies to live config", () => {
 
   it("emits a profile_changed activity on a successful switch", async () => {
     const { profiles, setup } = await load();
-    const { readActivity } = await import("../core/src/index.js");
+    const { readActivity } = await import("@intisy-ai/core");
     setup.initAndSeed();
     profiles.create("work");
     profiles.switchTo("work");

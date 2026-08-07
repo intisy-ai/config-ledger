@@ -2,7 +2,7 @@
 // Cross-app slash-commands for config-ledger plus the CLI actions behind them.
 // Mirrors sync-bridge/src/commands.ts: `config` is forwarded to core's
 // runConfigCli directly (no separate maybeRunConfigCli call in index.ts).
-import { runConfigCli, configCommand } from "../core/src/index.js";
+import { runConfigCli, configCommand } from "@intisy-ai/core";
 import { repo } from "./repo.js";
 import { autoCommit } from "./export.js";
 import { diffAgainstHead } from "./diff.js";
