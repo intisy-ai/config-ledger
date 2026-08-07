@@ -5,7 +5,7 @@ import { configFolder, trackedConfigFiles } from "./paths.js";
 import { repoFor } from "./repo.js";
 import { autoCommit } from "./export.js";
 import { valueAt } from "./history.js";
-import { emitEvent, TOPICS } from "../core/src/index.js";
+import { emitEvent, TOPICS } from "@intisy-ai/core";
 export { keyHistory } from "./history.js";
 
 // Whole-file writes; the caller is responsible for having shown/approved the

@@ -76,7 +76,7 @@ describe("importer + history", () => {
     const { rollbackKey } = await fresh();
     const { autoCommit } = await import("./export.js");
     const { repo } = await import("./repo.js");
-    const { readActivity } = await import("../core/src/index.js");
+    const { readActivity } = await import("@intisy-ai/core");
     repo.ensureRepo();
     const f = join(dir, "config", "claude-code-loader.json");
     writeFileSync(f, JSON.stringify({ providerRouting: true }));
@@ -101,7 +101,7 @@ describe("importer + history", () => {
     const { importFromHead } = await fresh();
     const { autoCommit } = await import("./export.js");
     const { repo } = await import("./repo.js");
-    const { readActivity } = await import("../core/src/index.js");
+    const { readActivity } = await import("@intisy-ai/core");
     repo.ensureRepo();
     autoCommit("v1");
     writeFileSync(join(dir, "config", "claude-code-loader.json"), JSON.stringify({ providerRouting: false }));
@@ -119,7 +119,7 @@ describe("importer + history", () => {
     await fresh();
     const { autoCommit } = await import("./export.js");
     const { repo } = await import("./repo.js");
-    const { readActivity } = await import("../core/src/index.js");
+    const { readActivity } = await import("@intisy-ai/core");
     repo.ensureRepo();
     expect(autoCommit("snap-reason")).toBe(true);
 
@@ -136,7 +136,7 @@ describe("importer + history", () => {
     const { autoCommit } = await import("./export.js");
     const { repo } = await import("./repo.js");
     const { keyHistory } = await import("./history.js");
-    const { drain } = await import("../core/src/index.js");
+    const { drain } = await import("@intisy-ai/core");
     repo.ensureRepo();
     autoCommit("v1");
     writeFileSync(join(dir, "config", "claude-code-loader.json"), JSON.stringify({ providerRouting: false }));

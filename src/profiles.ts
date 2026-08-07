@@ -3,7 +3,7 @@ import { repoFor } from "./repo.js";
 import { diffAgainstHead } from "./diff.js";
 import { restoreFromRef } from "./importer.js";
 import { trackedConfigFiles } from "./paths.js";
-import { emitEvent, TOPICS } from "../core/src/index.js";
+import { emitEvent, TOPICS } from "@intisy-ai/core";
 
 // Switching a profile means checking out that branch in the shadow repo AND
 // applying its config to the live files. We refuse when live has uncommitted

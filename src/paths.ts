@@ -9,7 +9,7 @@
 // fallbacks that the constraints doc's simplified description already implies.
 import { join } from "path";
 import { readdirSync } from "fs";
-import { getAppConfigDir } from "../core/src/index.js";
+import { getAppConfigDir } from "@intisy-ai/core";
 
 // `home` scopes every path to one app config dir. Omit it and the current app's
 // dir (getAppConfigDir) is used, so single-home callers behave unchanged; Cairn

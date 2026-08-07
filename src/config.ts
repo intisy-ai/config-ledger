@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { defineConfig, defineCapabilities, makeWriteLog } from "../core/src/index.js";
+import { defineConfig, defineCapabilities, makeWriteLog } from "@intisy-ai/core";
 
 export const CONFIG_DEFAULTS = { secrets: "exclude", logging: true };
 export function getConfig() { return defineConfig("config-ledger", CONFIG_DEFAULTS); }
