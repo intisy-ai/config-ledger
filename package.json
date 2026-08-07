@@ -1,6 +1,6 @@
 {
   "name": "config-ledger",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Git-backed config management for the loader ecosystem: versioned, sanitized snapshots of an app home's config with history, rollback, and profiles.",
   "main": "dist/index.js",
   "type": "module",
@@ -26,10 +26,11 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "tsc --noEmit && node build.mjs",
+    "build": "npm run build:deps && tsc --noEmit && node build.mjs",
     "postbuild": "node dist/index.js readme",
     "test": "npm run build && vitest run",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "build:deps": "npm --prefix core install && npm --prefix core run build"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
