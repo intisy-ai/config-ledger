@@ -48,26 +48,33 @@ export function screenData(screenId: string, home: string, deps: Deps = {}): { s
 
 export function screenInvoke(actionId: string, home: string, args: Record<string, unknown>, deps: Deps = {}): InvokeResult {
   const open = deps.open ?? openLedger;
-  const ledger = open(home);
-  if (actionId === "commit") {
-    ledger.ensureRepo();
-    ledger.commit(text(args, "reason") || "manual snapshot");
-    return { ok: true, refresh: true };
+  // Mirrors screenData's catch: an unusable action (a bad --home, a disk/permission
+  // error mid-write) must come back as a renderable failure, not an unhandled throw
+  // that leaves stdout empty and the host with nothing to parse.
+  try {
+    const ledger = open(home);
+    if (actionId === "commit") {
+      ledger.ensureRepo();
+      ledger.commit(text(args, "reason") || "manual snapshot");
+      return { ok: true, refresh: true };
+    }
+    if (actionId === "restore") {
+      const count = ledger.restore(text(args, "id"));
+      return { ok: true, message: `Restored ${count} files`, refresh: true };
+    }
+    if (actionId === "profileCreate") {
+      ledger.ensureRepo();
+      ledger.profiles.create(text(args, "name"));
+      return { ok: true, refresh: true };
+    }
+    if (actionId === "profileSwitch") {
+      const result = ledger.profiles.switchTo(text(args, "id"));
+      return result.ok ? { ok: true, refresh: true } : { ok: false, message: result.reason ?? "Could not switch profile.", refresh: true };
+    }
+    return { ok: false, message: `unknown action: ${actionId}` };
+  } catch (error) {
+    return { ok: false, message: error instanceof Error ? error.message : String(error), refresh: true };
   }
-  if (actionId === "restore") {
-    const count = ledger.restore(text(args, "id"));
-    return { ok: true, message: `Restored ${count} files`, refresh: true };
-  }
-  if (actionId === "profileCreate") {
-    ledger.ensureRepo();
-    ledger.profiles.create(text(args, "name"));
-    return { ok: true, refresh: true };
-  }
-  if (actionId === "profileSwitch") {
-    const result = ledger.profiles.switchTo(text(args, "id"));
-    return result.ok ? { ok: true, refresh: true } : { ok: false, message: result.reason ?? "Could not switch profile.", refresh: true };
-  }
-  return { ok: false, message: `unknown action: ${actionId}` };
 }
 
 // stdout carries the JSON answer and nothing else: it is the host's only channel.

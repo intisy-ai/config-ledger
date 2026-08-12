@@ -70,4 +70,16 @@ describe("screenInvoke", () => {
     expect(screenInvoke("nope", "/home", {}, { open: () => fakeLedger() as never }))
       .toEqual({ ok: false, message: "unknown action: nope" });
   });
+
+  it("reports a thrown open() as a not-ok result instead of propagating", () => {
+    const open = () => { throw new Error("not a repo"); };
+    expect(screenInvoke("commit", "/home", { reason: "x" }, { open }))
+      .toEqual({ ok: false, message: "not a repo", refresh: true });
+  });
+
+  it("reports a thrown ledger operation as a not-ok result instead of propagating", () => {
+    const ledger = fakeLedger({ ensureRepo: vi.fn(() => { throw new Error("EACCES: permission denied"); }) });
+    expect(screenInvoke("commit", "/home", { reason: "x" }, { open: () => ledger as never }))
+      .toEqual({ ok: false, message: "EACCES: permission denied", refresh: true });
+  });
 });
