@@ -6,6 +6,7 @@ import { getConfig, writeLog } from "./config.js";
 import { CONFIG_LEDGER_COMMANDS, maybeRunCli } from "./commands.js";
 import { repo } from "./repo.js";
 import { autoCommit } from "./export.js";
+import { maybeRunUiCli } from "./ui.js";
 
 defineReadme({
   description: "Git-backed config management for the loader ecosystem: versioned, sanitized snapshots of an app home's config with history, rollback, and profiles.",
@@ -15,6 +16,7 @@ defineReadme({
 getConfig(); // register defaults before the CLI guard; writes no file on launch
 
 if (maybeRunReadmeCli("config-ledger")) process.exit(0);
+if (await maybeRunUiCli()) process.exit(0);
 if (await maybeRunCli("config-ledger")) process.exit(0);
 try { deployCommands("config-ledger", CONFIG_LEDGER_COMMANDS); } catch { /* best-effort */ }
 
