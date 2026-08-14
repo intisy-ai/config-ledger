@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { defineConfig, defineCapabilities, makeWriteLog } from "@intisy-ai/core";
-import { CONFIG_LEDGER_SCREEN } from "./screen.js";
 
 export const CONFIG_DEFAULTS = { secrets: "exclude", logging: true };
 export function getConfig() { return defineConfig("config-ledger", CONFIG_DEFAULTS); }
@@ -16,7 +15,6 @@ defineCapabilities("config-ledger", {
     { id: "profileCreate", label: "Create", args: [{ key: "name", type: "string", label: "Profile name" }] },
     { id: "profileSwitch", label: "Switch" },
   ],
-  screens: [CONFIG_LEDGER_SCREEN],
 });
 
 export const writeLog = makeWriteLog("config-ledger");

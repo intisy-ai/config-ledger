@@ -28,4 +28,7 @@ export const ConfigLedgerPlugin = async function () {
 // Under Claude Code the plugin-updater is the runtime and invokes activate()
 // after each deploy; opencode also calls this (it runs every export as a hook).
 export async function activate() { return ConfigLedgerPlugin(); }
-export default ConfigLedgerPlugin;
+// What an in-process host loads. `ConfigLedgerPlugin` and `activate` above stay exported: OpenCode
+// invokes every exported function as a hook, and under Claude Code the plugin manager calls
+// activate() after each deploy.
+export { default } from "./plugin.js";

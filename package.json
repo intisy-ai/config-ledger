@@ -19,6 +19,7 @@
   ],
   "files": [
     "dist/",
+    "plugin.json",
     "README.md",
     "LICENSE"
   ],
