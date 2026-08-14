@@ -67,6 +67,7 @@ export const ConfigLedgerPlugin = async function () {
   try { if (repo.isRepo()) autoCommit("load"); } catch (e) { writeLog("load auto-commit failed: " + e, true); }
   return {};
 };
+// plugin-updater calls this by name after each Claude Code deploy.
 export async function activate() { return ConfigLedgerPlugin(); }
 // ConfigLedgerPlugin and activate stay exported too: OpenCode invokes every exported function, while an api host reads the default.
 export { default } from "./plugin.js";
