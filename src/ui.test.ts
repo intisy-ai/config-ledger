@@ -82,4 +82,25 @@ describe("screenInvoke", () => {
     expect(screenInvoke("commit", "/home", { reason: "x" }, { open: () => ledger as never }))
       .toEqual({ ok: false, message: "EACCES: permission denied", refresh: true });
   });
+
+  it("refuses a restore with no snapshot id instead of resolving the empty ref to the git index", () => {
+    const ledger = fakeLedger();
+    expect(screenInvoke("restore", "/home", {}, { open: () => ledger as never }))
+      .toEqual({ ok: false, message: "Pick a snapshot on the Config screen to restore." });
+    expect(ledger.restore).not.toHaveBeenCalled();
+  });
+
+  it("refuses a profile switch with no profile id", () => {
+    const ledger = fakeLedger();
+    expect(screenInvoke("profileSwitch", "/home", {}, { open: () => ledger as never }))
+      .toEqual({ ok: false, message: "Pick a profile on the Config screen to switch to." });
+    expect(ledger.profiles.switchTo).not.toHaveBeenCalled();
+  });
+
+  it("refuses a profile create with no name", () => {
+    const ledger = fakeLedger();
+    expect(screenInvoke("profileCreate", "/home", {}, { open: () => ledger as never }))
+      .toEqual({ ok: false, message: "Enter a profile name on the Config screen." });
+    expect(ledger.profiles.create).not.toHaveBeenCalled();
+  });
 });

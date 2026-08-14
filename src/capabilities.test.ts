@@ -152,6 +152,14 @@ describe("the settings action runner", () => {
     expect(configLedgerActions("/home", { open: () => fakeLedger() as never })("nope"))
       .toEqual({ ok: false, message: "unknown action: nope" });
   });
+
+  it("refuses a restore run from a settings surface, which collects no snapshot id", async () => {
+    const { configLedgerActions } = await load();
+    const ledger = fakeLedger();
+    expect(configLedgerActions("/home", { open: () => ledger as never })("restore"))
+      .toEqual({ ok: false, message: "Pick a snapshot on the Config screen to restore." });
+    expect(ledger.restore).not.toHaveBeenCalled();
+  });
 });
 
 describe("ensureDataRepo", () => {

@@ -59,16 +59,22 @@ export function screenInvoke(actionId: string, home: string, args: Record<string
       return { ok: true, refresh: true };
     }
     if (actionId === "restore") {
-      const count = ledger.restore(text(args, "id"));
+      const ref = text(args, "id");
+      if (!ref) return { ok: false, message: "Pick a snapshot on the Config screen to restore." };
+      const count = ledger.restore(ref);
       return { ok: true, message: `Restored ${count} files`, refresh: true };
     }
     if (actionId === "profileCreate") {
+      const name = text(args, "name");
+      if (!name) return { ok: false, message: "Enter a profile name on the Config screen." };
       ledger.ensureRepo();
-      ledger.profiles.create(text(args, "name"));
+      ledger.profiles.create(name);
       return { ok: true, refresh: true };
     }
     if (actionId === "profileSwitch") {
-      const result = ledger.profiles.switchTo(text(args, "id"));
+      const profile = text(args, "id");
+      if (!profile) return { ok: false, message: "Pick a profile on the Config screen to switch to." };
+      const result = ledger.profiles.switchTo(profile);
       return result.ok ? { ok: true, refresh: true } : { ok: false, message: result.reason ?? "Could not switch profile.", refresh: true };
     }
     return { ok: false, message: `unknown action: ${actionId}` };
