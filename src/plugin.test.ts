@@ -1,10 +1,36 @@
-import { describe, expect, it, vi } from "vitest";
-import { readFileSync } from "node:fs";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { mkdtempSync, mkdirSync, rmSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { validateManifest } from "../core/api/dist/index.js";
-import plugin from "./plugin.js";
 import type { PluginContext } from "../core/api/dist/index.js";
 
 const manifest = JSON.parse(readFileSync(new URL("../plugin.json", import.meta.url), "utf-8"));
+
+let ambient: string;
+
+beforeEach(() => {
+  ambient = mkdtempSync(join(tmpdir(), "cl-plugin-"));
+  vi.stubEnv("HUB_CONFIG_DIR", ambient);
+  mkdirSync(join(ambient, "config"), { recursive: true });
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+  rmSync(ambient, { recursive: true, force: true });
+});
+
+/**
+ * Re-imports the plugin after the home is pinned.
+ *
+ * @remarks
+ * `src/config.ts` binds its logger to the ambient app home at import time, so a static import would
+ * bind it before `beforeEach` pins `HUB_CONFIG_DIR`.
+ */
+async function load() {
+  vi.resetModules();
+  return (await import("./plugin.js")).default;
+}
 
 function fakeContext(home: string): { context: PluginContext; provided: Map<string, unknown> } {
   const provided = new Map<string, unknown>();
@@ -30,13 +56,15 @@ describe("plugin.json", () => {
     expect(manifest.id).toBe("config-ledger");
   });
 
-  it("declares exactly the capabilities activate provides", () => {
+  it("declares exactly the capabilities activate provides", async () => {
+    const plugin = await load();
     const { context, provided } = fakeContext("/home");
     plugin.activate(context);
     expect([...provided.keys()].sort()).toEqual([...manifest.capabilities].sort());
   });
 
-  it("declares only the lifecycle hooks the entry exports", () => {
+  it("declares only the lifecycle hooks the entry exports", async () => {
+    const plugin = await load();
     expect(manifest.lifecycle).toEqual({ install: true, repair: true });
     expect(typeof plugin.install).toBe("function");
     expect(typeof plugin.repair).toBe("function");
@@ -44,7 +72,8 @@ describe("plugin.json", () => {
 });
 
 describe("the provided implementations", () => {
-  it("gives each capability the shape its contract requires", () => {
+  it("gives each capability the shape its contract requires", async () => {
+    const plugin = await load();
     const { context, provided } = fakeContext("/home");
     plugin.activate(context);
     const screens = provided.get("screens") as Record<string, unknown>;
@@ -56,6 +85,7 @@ describe("the provided implementations", () => {
   });
 
   it("answers the settings schema with the fields and actions src/config.ts declares", async () => {
+    const plugin = await load();
     const { context, provided } = fakeContext("/home");
     plugin.activate(context);
     const schema = await (provided.get("settings") as { schema: () => Promise<Record<string, unknown>> }).schema();
@@ -64,7 +94,8 @@ describe("the provided implementations", () => {
       .toEqual(["commit", "restore", "profileCreate", "profileSwitch"]);
   });
 
-  it("no longer carries screens on the settings declaration, which the screens capability owns", async () => {
+  it("does not expose a screens key on the settings declaration, which the screens capability owns", async () => {
+    const plugin = await load();
     const { context, provided } = fakeContext("/home");
     plugin.activate(context);
     const schema = await (provided.get("settings") as { schema: () => Promise<Record<string, unknown>> }).schema();
@@ -72,6 +103,7 @@ describe("the provided implementations", () => {
   });
 
   it("deactivates without throwing", async () => {
+    const plugin = await load();
     await expect(Promise.resolve(plugin.deactivate())).resolves.toBeUndefined();
   });
 });
