@@ -1,3 +1,8 @@
 dist/
 node_modules/
 .idea/
+docs/
+.DS_Store
+.env
+.superpowers/
+graphify-out/

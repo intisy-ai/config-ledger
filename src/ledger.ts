@@ -23,6 +23,7 @@ export function openLedger(home?) {
     diffHead: () => diffAgainstHead(home),
     diffRefs: (refA, refB) => diffRefs(refA, refB, home),
     restore: (ref) => restoreFromRef(ref, home),
+    filesAt: (ref) => repo.filesAtRef(ref),
     rollbackKey: (file, key, hash) => rollbackKey(file, key, hash, home),
     profiles: profilesFor(home),
   };

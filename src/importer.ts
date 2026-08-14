@@ -12,6 +12,9 @@ export { keyHistory } from "./history.js";
 // diff first (enforced at the UI/CLI layer, not here). ref is any committish in
 // the home's data repo (HEAD, a commit hash, a branch name).
 export function restoreFromRef(ref, home?) {
+  // ":path" is valid gitrevisions syntax for the index, so an empty ref would silently
+  // restore staged content instead of failing.
+  if (!ref) return 0;
   let n = 0;
   const repo = repoFor(home);
   for (const name of trackedConfigFiles(home)) {
