@@ -1,6 +1,7 @@
 import { createSettingsCapability } from "@intisy-ai/core";
 import type { Plugin, PluginContext } from "@intisy-ai/api";
 import { configLedgerActions, configLedgerHistory, configLedgerScreens, ensureDataRepo } from "./capabilities.js";
+// Registers this plugin's config defaults and its settings declaration, which schema() reads back.
 import "./config.js";
 
 const PLUGIN_ID = "config-ledger";
