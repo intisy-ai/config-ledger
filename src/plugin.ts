@@ -1,4 +1,4 @@
-import { createSettingsCapability } from "@intisy-ai/core";
+import { createSettingsCapability, CONFIG_HISTORY, SCREENS, SETTINGS } from "@intisy-ai/core";
 import type { Plugin, PluginContext } from "@intisy-ai/api";
 import { configLedgerActions, configLedgerHistory, configLedgerScreens, ensureDataRepo } from "./capabilities.js";
 // Registers this plugin's config defaults and its settings declaration, which schema() reads back.
@@ -10,9 +10,9 @@ const PLUGIN_ID = "config-ledger";
 const plugin: Plugin = {
   activate(context: PluginContext) {
     const home = context.paths.home;
-    context.provide("screens", configLedgerScreens(home));
-    context.provide("config-history", configLedgerHistory(home));
-    context.provide("settings", createSettingsCapability(PLUGIN_ID, configLedgerActions(home)));
+    context.provide(SCREENS, configLedgerScreens(home));
+    context.provide(CONFIG_HISTORY, configLedgerHistory(home));
+    context.provide(SETTINGS, createSettingsCapability(PLUGIN_ID, configLedgerActions(home)));
   },
   deactivate() {},
   install(context: PluginContext) {
