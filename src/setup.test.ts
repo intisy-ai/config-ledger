@@ -2,11 +2,14 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
+import { installFreshRuntime } from "./__tests__/runtime.js";
 
 let dir;
 beforeEach(() => { dir = mkdtempSync(join(tmpdir(), "cfggit-")); vi.stubEnv("HUB_CONFIG_DIR", dir); mkdirSync(join(dir, "config"), { recursive: true }); writeFileSync(join(dir, "config", "plugins.json"), "[]"); });
 afterEach(() => { vi.unstubAllEnvs(); rmSync(dir, { recursive: true, force: true }); });
-async function fresh() { vi.resetModules(); return { setup: await import("./setup.js"), profiles: await import("./profiles.js") }; }
+async function fresh() {
+  vi.resetModules();
+  await installFreshRuntime(); return { setup: await import("./setup.js"), profiles: await import("./profiles.js") }; }
 
 describe("setup + profiles", () => {
   it("initAndSeed creates a repo with a seed commit", async () => {

@@ -5,7 +5,7 @@ import { configFolder, trackedConfigFiles } from "./paths.js";
 import { sanitizeForRepo } from "./secrets.js";
 import { repoFor } from "./repo.js";
 import { getConfig } from "./config.js";
-import { emitEvent, TOPICS } from "@intisy-ai/core";
+import { LEDGER_TOPICS, ledgerRuntime } from "./runtime.js";
 
 export function snapshotLive(mode, home?) {
   const out = {};
@@ -39,7 +39,7 @@ export function autoCommit(reason, home?) {
   if (committed) {
     const head = repo.log()[0];
     const hash = head ? head.hash : "";
-    emitEvent({ topic: TOPICS.configSnapshot, action: "snapshot_committed", impact: "notice", outcome: "ok", subject: { kind: "snapshot", id: hash }, details: { reason, files: trackedConfigFiles(home) } }, "config-ledger");
+    ledgerRuntime().emit({ topic: LEDGER_TOPICS.configSnapshot, action: "snapshot_committed", impact: "notice", outcome: "ok", subject: { kind: "snapshot", id: hash }, details: { reason, files: trackedConfigFiles(home) } });
   }
   return committed;
 }

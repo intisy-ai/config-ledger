@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { validateManifest } from "../core/api/generated/engine.js";
 import type { PluginContext } from "../core/api/generated/api.js";
+import { installFreshRuntime } from "./__tests__/runtime.js";
 
 const manifest = JSON.parse(readFileSync(new URL("../plugin.json", import.meta.url), "utf-8"));
 
@@ -24,11 +25,12 @@ afterEach(() => {
  * Re-imports the plugin after the home is pinned.
  *
  * @remarks
- * `src/config.ts` binds its logger to the ambient app home at import time, so a static import would
- * bind it before `beforeEach` pins `HUB_CONFIG_DIR`.
+ * The runtime installed alongside binds the home it resolved, so it has to be installed after
+ * `beforeEach` pins `HUB_CONFIG_DIR`.
  */
 async function load() {
   vi.resetModules();
+  await installFreshRuntime();
   return (await import("./plugin.js")).default;
 }
 

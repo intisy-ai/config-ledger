@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
+import { installFreshRuntime } from "./__tests__/runtime.js";
 
 let ambient: string, homeA: string, homeB: string;
 
@@ -26,7 +27,9 @@ afterEach(() => {
   vi.unstubAllEnvs();
   for (const d of [ambient, homeA, homeB]) rmSync(d, { recursive: true, force: true });
 });
-async function fresh() { vi.resetModules(); }
+async function fresh() {
+  vi.resetModules();
+  await installFreshRuntime(); }
 
 describe("multi-home scoping", () => {
   it("keeps each home's data repo independent", async () => {

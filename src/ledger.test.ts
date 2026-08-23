@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
+import { installFreshRuntime } from "./__tests__/runtime.js";
 
 let ambient: string, home: string;
 function seed(dir: string, cfg: unknown) {
@@ -20,6 +21,7 @@ afterEach(() => { vi.unstubAllEnvs(); for (const d of [ambient, home]) rmSync(d,
 describe("snapshot API + openLedger", () => {
   it("lists snapshots newest-first with subjects", async () => {
     vi.resetModules();
+  await installFreshRuntime();
     const { openLedger } = await import("./ledger.js");
     const led = openLedger(home);
     led.ensureRepo();
@@ -35,6 +37,7 @@ describe("snapshot API + openLedger", () => {
 
   it("diffs two snapshots", async () => {
     vi.resetModules();
+  await installFreshRuntime();
     const { openLedger } = await import("./ledger.js");
     const led = openLedger(home);
     led.ensureRepo();
@@ -51,6 +54,7 @@ describe("snapshot API + openLedger", () => {
 
   it("restores live config from a chosen snapshot", async () => {
     vi.resetModules();
+  await installFreshRuntime();
     const { openLedger } = await import("./ledger.js");
     const led = openLedger(home);
     led.ensureRepo();

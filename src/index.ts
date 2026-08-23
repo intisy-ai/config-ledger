@@ -2,11 +2,16 @@
 // Plugin hook entry: OpenCode runs every export as a hook, and an api host reads the default export.
 // The library API lives in dist/lib.js.
 import { defineReadme, maybeRunReadmeCli } from "@intisy-ai/core";
+import { installCoreRuntime } from "./runtime-core.js";
 import { writeLog } from "./config.js";
 import { maybeRunCli } from "./commands.js";
 import { repo } from "./repo.js";
 import { autoCommit } from "./export.js";
 import { maybeRunUiCli } from "./ui.js";
+
+// Installed before anything reads it, and replaced by the plugin's own context when a host
+// activates the default export.
+installCoreRuntime();
 
 defineReadme({
   description: "Git-backed config management for the loader ecosystem: versioned, sanitized snapshots of an app home's config with history, rollback, and profiles.",

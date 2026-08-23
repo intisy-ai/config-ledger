@@ -2,6 +2,23 @@ import type { Plugin, PluginContext } from "@intisy-ai/api";
 import type { ConfigHistoryCapability, ScreensCapability, SettingsCapability } from "@intisy-ai/core";
 import { configLedgerActions, configLedgerHistory, configLedgerScreens, ensureDataRepo } from "./capabilities.js";
 import { CONFIG_LEDGER_SETTINGS } from "./config.js";
+import { setLedgerRuntime, type LedgerRuntime } from "./runtime.js";
+
+/**
+ * The engine's runtime, answered by this plugin's context.
+ *
+ * @remarks
+ * An error is logged at error level and anything else at info, because the context's logger
+ * separates them where this engine passes a flag.
+ */
+function contextRuntime(context: PluginContext): LedgerRuntime {
+  return {
+    home: () => context.paths.home,
+    config: () => context.config.all(),
+    log: (message, isError) => (isError ? context.log.error(message) : context.log.info(message)),
+    emit: ({ topic, ...payload }) => context.events.publish(context.topic(topic), payload),
+  };
+}
 
 /**
  * What an in-process host loads: the api plugin this bundle's default export carries.
@@ -13,6 +30,7 @@ import { CONFIG_LEDGER_SETTINGS } from "./config.js";
  */
 const plugin: Plugin = {
   activate(context: PluginContext) {
+    setLedgerRuntime(contextRuntime(context));
     const home = context.paths.home;
     const runAction = configLedgerActions(home);
     context.provide(context.capability<ScreensCapability>("screens"), configLedgerScreens(home));
@@ -24,9 +42,11 @@ const plugin: Plugin = {
   },
   deactivate() {},
   install(context: PluginContext) {
+    setLedgerRuntime(contextRuntime(context));
     ensureDataRepo(context.paths.home, "install");
   },
   repair(context: PluginContext) {
+    setLedgerRuntime(contextRuntime(context));
     ensureDataRepo(context.paths.home, "repair");
   },
 };

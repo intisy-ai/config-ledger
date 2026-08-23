@@ -1,21 +1,16 @@
 // @ts-nocheck
-// Config-dir resolution delegates to core's getAppConfigDir(), which already
-// implements the HUB_CONFIG_DIR -> HUB_CLAUDE_DIR/HUB_OPENCODE_DIR -> app-native
-// -> homedir fallback chain (see core/src/env.ts). This is a deliberate deviation
-// from a hand-rolled HUB_CONFIG_DIR-only check: core's testing.ts isolates test
-// homes via HUB_OPENCODE_DIR/HUB_CLAUDE_DIR (not HUB_CONFIG_DIR), so a hand-rolled
-// version would leak into the real ~/.claude / ~/.config/opencode during the
-// shared contract test. Re-implementing getAppConfigDir here would only drop
-// fallbacks that the constraints doc's simplified description already implies.
+// A caller naming no home gets whoever is running this bundle: core's resolved config dir for the
+// program half, the plugin's own home for the plugin half. Resolving it here instead would drop
+// core's HUB_CONFIG_DIR -> HUB_CLAUDE_DIR/HUB_OPENCODE_DIR -> app-native -> homedir chain, which is
+// also what isolates the shared contract test from the real ~/.claude and ~/.config/opencode.
 import { join } from "path";
 import { readdirSync } from "fs";
-import { getAppConfigDir } from "@intisy-ai/core";
+import { ledgerRuntime } from "./runtime.js";
 
-// `home` scopes every path to one app config dir. Omit it and the current app's
-// dir (getAppConfigDir) is used, so single-home callers behave unchanged; Cairn
-// passes an explicit home per app it manages.
+// `home` scopes every path to one app config dir. Omit it and the running host's own home is used,
+// so single-home callers behave unchanged; Cairn passes an explicit home per app it manages.
 export function configDir(home?) {
-  return home || getAppConfigDir();
+  return home || ledgerRuntime().home();
 }
 export function configFolder(home?) { return join(configDir(home), "config"); }
 export function dataRepoDir(home?) { return join(configDir(home), "repos", "config-ledger-data"); }

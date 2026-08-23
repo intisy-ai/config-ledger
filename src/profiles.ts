@@ -3,7 +3,7 @@ import { repoFor } from "./repo.js";
 import { diffAgainstHead } from "./diff.js";
 import { restoreFromRef } from "./importer.js";
 import { trackedConfigFiles } from "./paths.js";
-import { emitEvent, TOPICS } from "@intisy-ai/core";
+import { LEDGER_TOPICS, ledgerRuntime } from "./runtime.js";
 
 // Switching a profile means checking out that branch in the shadow repo AND
 // applying its config to the live files. We refuse when live has uncommitted
@@ -15,7 +15,7 @@ function switchTo(name, home?) {
   }
   repoFor(home).checkoutBranch(name);
   const files = restoreFromRef("HEAD", home);
-  emitEvent({ topic: TOPICS.configProfileChanged, action: "profile_changed", impact: "notice", outcome: "ok", subject: { kind: "profile", id: name, label: name }, details: { files: trackedConfigFiles(home) } }, "config-ledger");
+  ledgerRuntime().emit({ topic: LEDGER_TOPICS.configProfileChanged, action: "profile_changed", impact: "notice", outcome: "ok", subject: { kind: "profile", id: name, label: name }, details: { files: trackedConfigFiles(home) } });
   return { ok: true, profile: name, files };
 }
 

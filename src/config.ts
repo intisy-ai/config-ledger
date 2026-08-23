@@ -1,5 +1,5 @@
-import { getAppConfigDir, loadConfig, makeWriteLog } from "@intisy-ai/core";
 import type { CapabilitySchema } from "@intisy-ai/core";
+import { ledgerRuntime } from "./runtime.js";
 
 // What each setting is called and how a surface renders it. Data the settings capability answers
 // with, beside the values the manifest declares.
@@ -16,6 +16,10 @@ export const CONFIG_LEDGER_SETTINGS: CapabilitySchema = {
   ],
 };
 
-export function getConfig() { return loadConfig("config-ledger", getAppConfigDir()); }
+export function getConfig() {
+  return ledgerRuntime().config();
+}
 
-export const writeLog = makeWriteLog("config-ledger");
+export function writeLog(message: string, isError?: boolean): void {
+  ledgerRuntime().log(message, isError);
+}

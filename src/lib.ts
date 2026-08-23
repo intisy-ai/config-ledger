@@ -1,4 +1,9 @@
 // @ts-nocheck
+import { installCoreRuntime } from "./runtime-core.js";
+
+// A consumer of this bundle runs it with no host, so the engine takes core's runtime.
+installCoreRuntime();
+
 export { snapshotLive, exportLive, autoCommit } from "./export.js";
 export { diffAgainstHead, diffRefs, flatten } from "./diff.js";
 export { importFromHead, restoreFromRef, rollbackKey, keyHistory } from "./importer.js";
