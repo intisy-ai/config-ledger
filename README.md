@@ -68,7 +68,7 @@ npm install config-ledger
 
 ## Configuration
 
-Config file: `<configDir>/config/config-ledger.json` (edit via the loader or `/config-ledger-config set`).
+Config file: `<configDir>/config/config-ledger.json` (edit it directly, or through whatever settings surface the app offers).
 
 ```json
 {
@@ -86,7 +86,6 @@ Config file: `<configDir>/config/config-ledger.json` (edit via the loader or `/c
 
 | Command | Description | Arguments |
 | --- | --- | --- |
-| `/config-ledger-config` | View and change config-ledger configuration | `list | get <key> | set <key> <value>` |
 | `/config-ledger` | Git-backed config: status/commit/push/pull/history/profile/setup |  |
 
 ## Dependencies

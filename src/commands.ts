@@ -1,8 +1,7 @@
 // @ts-nocheck
-// Cross-app slash-commands for config-ledger plus the CLI actions behind them.
-// Mirrors sync-bridge/src/commands.ts: `config` is forwarded to core's
-// runConfigCli directly (no separate maybeRunConfigCli call in index.ts).
-import { runConfigCli, configCommand } from "@intisy-ai/core";
+// The CLI actions behind this plugin's slash commands, which the manifest declares and a host
+// deploys. They shell into this same bundle (`node <bundle> <action>`), so there is no separate
+// artifact to ship: maybeRunCli runs the action and the process exits.
 import { repo } from "./repo.js";
 import { autoCommit } from "./export.js";
 import { diffAgainstHead } from "./diff.js";
@@ -11,21 +10,10 @@ import { keyHistory } from "./history.js";
 import { profiles } from "./profiles.js";
 import * as setup from "./setup.js";
 
-export const CONFIG_LEDGER_COMMANDS = [
-  configCommand("config-ledger"),
-  {
-    name: "config-ledger",
-    description: "Git-backed config: status/commit/push/pull/history/profile/setup",
-    shell: 'node "{{BUNDLE}}" status',
-    body: "Above is the config-ledger status (setting-level diff vs the last commit). Summarize what changed.",
-  },
-];
-
-export async function maybeRunCli(pluginName) {
+export async function maybeRunCli() {
   const argv = process.argv.slice(2);
   const cmd = argv[0];
   if (!cmd) return false;
-  if (cmd === "config") { runConfigCli(pluginName, argv.slice(1)); return true; }
   if (!["status", "commit", "push", "pull", "history", "profile", "setup", "import"].includes(cmd)) return false;
   if (cmd === "setup") {
     setup.initAndSeed();

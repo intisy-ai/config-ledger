@@ -6,7 +6,7 @@ runPluginContract({
   entry: "dist/index.js",
   configName: "config-ledger",
   app: "both",
-  commands: ["config-ledger", "config-ledger-config"],
+  commands: ["config-ledger"],
   deploy: "load",
   actions: [["status"]],
   readme: true,
