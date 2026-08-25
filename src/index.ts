@@ -50,7 +50,6 @@ defineReadme({
     src: [
       "TypeScript source: the git-backed ledger, the capability implementations (`capabilities.ts`), the api plugin (`plugin.ts`), and the slash-command CLI",
       "`plugin.json`: the manifest an in-process host reads before importing this bundle",
-      "`core/` git submodule ([`intisy-ai/core`](https://github.com/intisy-ai/core)): shared config, logging, app detection, and the settings-capability adapter, bundled into `dist/` by esbuild",
     ],
     dist: [
       "`dist/index.js` (the hook entry and the module an in-process host imports; not committed)",
