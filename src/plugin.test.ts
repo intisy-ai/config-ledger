@@ -2,8 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkdtempSync, mkdirSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { validateManifest } from "../core/api/dist/index.js";
-import type { PluginContext } from "../core/api/dist/index.js";
+import { validateManifest } from "@intisy-ai/api/engine";
+import type { PluginContext } from "@intisy-ai/api";
+import { installFreshRuntime } from "./__tests__/runtime.js";
 
 const manifest = JSON.parse(readFileSync(new URL("../plugin.json", import.meta.url), "utf-8"));
 
@@ -24,11 +25,12 @@ afterEach(() => {
  * Re-imports the plugin after the home is pinned.
  *
  * @remarks
- * `src/config.ts` binds its logger to the ambient app home at import time, so a static import would
- * bind it before `beforeEach` pins `HUB_CONFIG_DIR`.
+ * The runtime installed alongside binds the home it resolved, so it has to be installed after
+ * `beforeEach` pins `HUB_CONFIG_DIR`.
  */
 async function load() {
   vi.resetModules();
+  await installFreshRuntime();
   return (await import("./plugin.js")).default;
 }
 
@@ -42,7 +44,13 @@ function fakeContext(home: string): { context: PluginContext; provided: Map<stri
     paths: { home, repos: `${home}/repos`, plugin: `${home}/plugin`, cache: `${home}/cache`, config: `${home}/config` },
     services: { register: vi.fn(), get: vi.fn(), want: vi.fn(), watch: vi.fn() },
     events: { publish: vi.fn(), subscribe: vi.fn() },
-    provide: (id: string, implementation: unknown) => { provided.set(id, implementation); },
+    homes: () => [],
+    // The engine mints a typed key from an id alone, which is all the plugin needs from it here.
+    capability: (id: string) => ({ id }),
+    // Keyed by id, not by the argument, because a typed key is an object and the host records the id.
+    provide: (key: string | { id: string }, implementation: unknown) => {
+      provided.set(typeof key === "string" ? key : key.id, implementation);
+    },
   } as unknown as PluginContext;
   return { context, provided };
 }

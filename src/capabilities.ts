@@ -8,7 +8,7 @@ import type {
   ScreenDataRequest,
   ScreenSpec,
   ScreensCapability,
-} from "@intisy-ai/api";
+} from "@intisy-ai/core";
 import { openLedger } from "./ledger.js";
 import { CONFIG_LEDGER_SCREEN } from "./screen.js";
 import { screenData, screenInvoke } from "./ui.js";

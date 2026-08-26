@@ -1,10 +1,9 @@
-// @ts-nocheck
-import { defineConfig, defineCapabilities, makeWriteLog } from "@intisy-ai/core";
+import type { CapabilitySchema } from "@intisy-ai/core";
+import { ledgerRuntime } from "./runtime.js";
 
-export const CONFIG_DEFAULTS = { secrets: "exclude", logging: true };
-export function getConfig() { return defineConfig("config-ledger", CONFIG_DEFAULTS); }
-
-defineCapabilities("config-ledger", {
+// What each setting is called and how a surface renders it. Data the settings capability answers
+// with, beside the values the manifest declares.
+export const CONFIG_LEDGER_SETTINGS: CapabilitySchema = {
   fields: [
     { key: "secrets", type: "select", label: "Secrets handling", description: "How secret values are treated in snapshots.", group: "General", options: [{ value: "exclude", label: "Exclude" }, { value: "include", label: "Include" }] },
     { key: "logging", type: "boolean", label: "Logging", group: "General" },
@@ -15,6 +14,12 @@ defineCapabilities("config-ledger", {
     { id: "profileCreate", label: "Create", args: [{ key: "name", type: "string", label: "Profile name" }] },
     { id: "profileSwitch", label: "Switch" },
   ],
-});
+};
 
-export const writeLog = makeWriteLog("config-ledger");
+export function getConfig() {
+  return ledgerRuntime().config();
+}
+
+export function writeLog(message: string, isError?: boolean): void {
+  ledgerRuntime().log(message, isError);
+}

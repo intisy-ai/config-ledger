@@ -4,8 +4,29 @@
   "api": 1,
   "entry": "dist/index.js",
   "displayName": "Config Ledger",
-  "capabilities": ["config-history", "screens", "settings"],
-  "lifecycle": { "install": true, "repair": true },
+  "capabilities": [
+    "config-history",
+    "screens",
+    "settings"
+  ],
+  "commands": [
+    {
+      "name": "config-ledger",
+      "description": "Git-backed config: status/commit/push/pull/history/profile/setup",
+      "shell": "node \"{{BUNDLE}}\" status",
+      "body": "Above is the config-ledger status (setting-level diff vs the last commit). Summarize what changed."
+    }
+  ],
+  "config": {
+    "defaults": {
+      "secrets": "exclude",
+      "logging": true
+    }
+  },
+  "lifecycle": {
+    "install": true,
+    "repair": true
+  },
   "repo": {
     "role": "Git-backed config history and profiles plugin",
     "category": "plugin",

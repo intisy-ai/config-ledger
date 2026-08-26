@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
+import { installFreshRuntime } from "./__tests__/runtime.js";
 
 let dir: string;
 const cfgPath = () => join(dir, "config", "claude-code-loader.json");
@@ -17,6 +18,7 @@ afterEach(() => { vi.unstubAllEnvs(); rmSync(dir, { recursive: true, force: true
 
 async function load() {
   vi.resetModules();
+  await installFreshRuntime();
   const { profiles } = await import("./profiles.js");
   const { setup } = { setup: await import("./setup.js") };
   return { profiles, setup };

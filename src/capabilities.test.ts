@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mkdtempSync, mkdirSync, rmSync, readFileSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
+import { installFreshRuntime } from "./__tests__/runtime.js";
 
 // Pinned for EVERY test in this file, not just the real-git ones: this repo's path resolution reads
 // the ambient home, and the failure-path tests below reach writeLog, which would otherwise open a
@@ -23,11 +24,12 @@ afterEach(() => {
  * Re-imports the module under test after the home is pinned.
  *
  * @remarks
- * `src/config.ts` binds its logger to the ambient app home at import time, so a static import would
- * bind it before `beforeEach` pins `HUB_CONFIG_DIR` and error paths would log outside the temp home.
+ * The runtime installed alongside binds the home it resolved, so it has to be installed after
+ * `beforeEach` pins `HUB_CONFIG_DIR` and error paths would log outside the temp home.
  */
 async function load() {
   vi.resetModules();
+  await installFreshRuntime();
   return import("./capabilities.js");
 }
 

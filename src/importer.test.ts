@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { mkdtempSync, rmSync, mkdirSync, writeFileSync, readFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
+import { installFreshRuntime } from "./__tests__/runtime.js";
 
 let dir;
 beforeEach(() => {
@@ -10,7 +11,9 @@ beforeEach(() => {
   writeFileSync(join(dir, "config", "claude-code-loader.json"), JSON.stringify({ providerRouting: true }));
 });
 afterEach(() => { vi.unstubAllEnvs(); rmSync(dir, { recursive: true, force: true }); });
-async function fresh() { vi.resetModules(); return await import("./importer.js"); }
+async function fresh() {
+  vi.resetModules();
+  await installFreshRuntime(); return await import("./importer.js"); }
 function liveCfg() { return JSON.parse(readFileSync(join(dir, "config", "claude-code-loader.json"), "utf8")); }
 
 describe("importer + history", () => {

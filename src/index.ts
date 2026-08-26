@@ -1,12 +1,17 @@
 // @ts-nocheck
 // Plugin hook entry: OpenCode runs every export as a hook, and an api host reads the default export.
 // The library API lives in dist/lib.js.
-import { defineReadme, maybeRunReadmeCli, deployCommands } from "@intisy-ai/core";
-import { getConfig, writeLog } from "./config.js";
-import { CONFIG_LEDGER_COMMANDS, maybeRunCli } from "./commands.js";
+import { defineReadme, maybeRunReadmeCli } from "@intisy-ai/core";
+import { installCoreRuntime } from "./runtime-core.js";
+import { writeLog } from "./config.js";
+import { maybeRunCli } from "./commands.js";
 import { repo } from "./repo.js";
 import { autoCommit } from "./export.js";
 import { maybeRunUiCli } from "./ui.js";
+
+// Installed before anything reads it, and replaced by the plugin's own context when a host
+// activates the default export.
+installCoreRuntime();
 
 defineReadme({
   description: "Git-backed config management for the loader ecosystem: versioned, sanitized snapshots of an app home's config with history, rollback, and profiles.",
@@ -45,22 +50,17 @@ defineReadme({
     src: [
       "TypeScript source: the git-backed ledger, the capability implementations (`capabilities.ts`), the api plugin (`plugin.ts`), and the slash-command CLI",
       "`plugin.json`: the manifest an in-process host reads before importing this bundle",
-      "`core/` git submodule ([`intisy-ai/core`](https://github.com/intisy-ai/core)): shared config, logging, app detection, and the settings-capability adapter, bundled into `dist/` by esbuild",
     ],
     dist: [
       "`dist/index.js` (the hook entry and the module an in-process host imports; not committed)",
       "`dist/lib.js` (the library surface other tools import; not committed)",
     ],
   },
-  commands: CONFIG_LEDGER_COMMANDS,
   dependencies: ["core"],
 });
-getConfig(); // register defaults before the CLI guard; writes no file on launch
-
 if (maybeRunReadmeCli("config-ledger")) process.exit(0);
 if (await maybeRunUiCli()) process.exit(0);
-if (await maybeRunCli("config-ledger")) process.exit(0);
-try { deployCommands("config-ledger", CONFIG_LEDGER_COMMANDS); } catch { /* best-effort */ }
+if (await maybeRunCli()) process.exit(0);
 
 // auto-commit local config changes on load (best-effort; only when a repo exists)
 export const ConfigLedgerPlugin = async function () {

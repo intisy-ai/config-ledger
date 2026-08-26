@@ -5,7 +5,7 @@ import { configFolder, trackedConfigFiles } from "./paths.js";
 import { repoFor } from "./repo.js";
 import { autoCommit } from "./export.js";
 import { valueAt } from "./history.js";
-import { emitEvent, TOPICS } from "@intisy-ai/core";
+import { LEDGER_TOPICS, ledgerRuntime } from "./runtime.js";
 export { keyHistory } from "./history.js";
 
 // Whole-file writes; the caller is responsible for having shown/approved the
@@ -21,14 +21,14 @@ export function restoreFromRef(ref, home?) {
     const text = repo.showFileAtRef(ref, name);
     if (text == null) continue;
     writeFileSync(join(configFolder(home), name), text, "utf8");
-    emitEvent({
-      topic: TOPICS.configChanged,
+    ledgerRuntime().emit({
+      topic: LEDGER_TOPICS.configChanged,
       action: "config_changed",
       impact: "notice",
       outcome: "ok",
       subject: { kind: "config-file", id: name, label: name },
       details: { file: name, ref, message: `Restored ${name} from ${ref}` },
-    }, "config-ledger");
+    });
     n++;
   }
   return n;
@@ -60,13 +60,13 @@ export function rollbackKey(file, key, hash, home?) {
   if (val === undefined) delete node[leaf];
   else node[leaf] = val;
   writeFileSync(p, JSON.stringify(obj, null, 2), "utf8");
-  emitEvent({
-    topic: TOPICS.configChanged,
+  ledgerRuntime().emit({
+    topic: LEDGER_TOPICS.configChanged,
     action: "config_changed",
     impact: "notice",
     outcome: "ok",
     subject: { kind: "config-key", id: key, label: `${file}:${key}` },
     details: { file, key, ref: hash, message: `Rolled ${file}:${key} back to ${hash}` },
-  }, "config-ledger");
+  });
   return autoCommit("rollback " + file + ":" + key, home);
 }
