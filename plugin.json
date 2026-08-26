@@ -27,9 +27,14 @@
     "install": true,
     "repair": true
   },
+  "publish": {
+    "generatedReadme": true
+  },
   "repo": {
     "role": "Git-backed config history and profiles plugin",
     "category": "plugin",
-    "tech": "typescript"
+    "tech": [
+      "typescript"
+    ]
   }
 }
