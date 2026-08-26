@@ -1,6 +1,6 @@
 {
   "name": "config-ledger",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Git-backed config management for the loader ecosystem: versioned, sanitized snapshots of an app home's config with history, rollback, and profiles.",
   "main": "dist/index.js",
   "type": "module",
