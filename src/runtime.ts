@@ -1,12 +1,7 @@
+import type { ActivitySpec } from "@intisy-ai/core";
+
 /** What this plugin reports to the activity ledger. */
-export interface LedgerActivity {
-  topic: string;
-  action: string;
-  impact?: string;
-  outcome?: string;
-  subject?: { kind: string; id: string; label?: string };
-  details?: Record<string, unknown>;
-}
+export type LedgerActivity = Pick<ActivitySpec, "topic" | "action" | "impact" | "outcome" | "subject" | "details">;
 
 /**
  * What the ledger engine takes from whoever is running it.
