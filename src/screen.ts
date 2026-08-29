@@ -1,4 +1,4 @@
-import type { ScreenSpec } from "@intisy-ai/core";
+import type { ScreenSpec } from "@intisy-ai/basekit";
 
 export const SCREEN_SOURCES = ["summary", "notice", "pending", "history", "profiles"] as const;
 

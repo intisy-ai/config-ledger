@@ -1,6 +1,6 @@
 // The runtime the program half installs: this plugin's CLI and its README generator run with no
 // host, so they take the home, the settings and the ledger from core directly.
-import { emitEvent, getAppConfigDir, loadConfig, makeWriteLog } from "@intisy-ai/core";
+import { emitEvent, getAppConfigDir, loadConfig, makeWriteLog } from "@intisy-ai/basekit";
 import { setLedgerRuntime, type LedgerRuntime } from "./runtime.js";
 
 const NAME = "config-ledger";

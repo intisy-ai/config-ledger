@@ -1,4 +1,4 @@
-import type { CapabilitySchema } from "@intisy-ai/core";
+import type { CapabilitySchema } from "@intisy-ai/basekit";
 import { ledgerRuntime } from "./runtime.js";
 
 // What each setting is called and how a surface renders it. Data the settings capability answers

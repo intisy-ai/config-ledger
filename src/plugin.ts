@@ -1,5 +1,5 @@
 import type { Plugin, PluginContext } from "@intisy-ai/api";
-import type { ConfigHistoryCapability, ScreensCapability, SettingsCapability } from "@intisy-ai/core";
+import type { ConfigHistoryCapability, ScreensCapability, SettingsCapability } from "@intisy-ai/basekit";
 import { configLedgerActions, configLedgerHistory, configLedgerScreens, ensureDataRepo } from "./capabilities.js";
 import { CONFIG_LEDGER_SETTINGS } from "./config.js";
 import { setLedgerRuntime, type LedgerRuntime } from "./runtime.js";

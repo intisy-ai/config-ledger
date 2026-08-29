@@ -1,7 +1,7 @@
 // @ts-nocheck
-// A caller naming no home gets whoever is running this bundle: core's resolved config dir for the
+// A caller naming no home gets whoever is running this bundle: basekit's resolved config dir for the
 // program half, the plugin's own home for the plugin half. Resolving it here instead would drop
-// core's HUB_CONFIG_DIR -> HUB_CLAUDE_DIR/HUB_OPENCODE_DIR -> app-native -> homedir chain, which is
+// basekit's HUB_CONFIG_DIR -> HUB_CLAUDE_DIR/HUB_OPENCODE_DIR -> app-native -> homedir chain, which is
 // also what isolates the shared contract test from the real ~/.claude and ~/.config/opencode.
 import { join } from "path";
 import { readdirSync } from "fs";

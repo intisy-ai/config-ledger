@@ -1,7 +1,7 @@
 // @ts-nocheck
 // Plugin hook entry: OpenCode runs every export as a hook, and an api host reads the default export.
 // The library API lives in dist/lib.js.
-import { defineReadme, maybeRunReadmeCli } from "@intisy-ai/core";
+import { defineReadme, maybeRunReadmeCli } from "@intisy-ai/basekit";
 import { installCoreRuntime } from "./runtime-core.js";
 import { writeLog } from "./config.js";
 import { maybeRunCli } from "./commands.js";
@@ -56,7 +56,7 @@ defineReadme({
       "`dist/lib.js` (the library surface other tools import; not committed)",
     ],
   },
-  dependencies: ["core"],
+  dependencies: ["basekit"],
 });
 if (maybeRunReadmeCli("config-ledger")) process.exit(0);
 if (await maybeRunUiCli()) process.exit(0);
