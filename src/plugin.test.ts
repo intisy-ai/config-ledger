@@ -2,8 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkdtempSync, mkdirSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { validateManifest } from "@intisy-ai/api/engine";
-import type { PluginContext } from "@intisy-ai/api";
+import { validateManifest } from "@intisy/bayonet/engine";
+import type { PluginContext } from "@intisy/bayonet";
 import { installFreshRuntime } from "./__tests__/runtime.js";
 
 const manifest = JSON.parse(readFileSync(new URL("../plugin.json", import.meta.url), "utf-8"));
